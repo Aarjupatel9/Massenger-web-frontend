@@ -32,6 +32,7 @@
   "scripts": {
     "start-http": "set HTTPS=true&&react-scripts start",
     "start": "react-scripts start",
+    "start-self-update": "nodemon self-restart-git-pull.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
