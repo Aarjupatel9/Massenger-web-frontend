@@ -1,0 +1,18 @@
+setCurrentUserReducer reducer call
+reducers.js:51 setMySocketInstanceReducer reducer call inside if 
+home.component.js:52 before updateMassege in app.js useEffect
+user.service.js:98 updateMasseges start... MyContacts is :  2
+user.service.js:110 updateMasseges :  6440d822f60588934b7c1446  and data is : [6440d837f60588934b7c1447: null, 6440da64a72c6878e94754f2: null]
+user.service.js:91 response in login arrive :  {status: 1, data: Array(2)}
+home.component.js:61 UserService.updateMyContacts().then() newMyContacts is :  (2) [{…}, {…}]
+index.js:29 in SetMyContacts action-creaters
+reducers.js:28 setCurrentUserReducer reducer call
+reducers.js:43 setMyContactsReducer reducer call inside if 
+home.component.js:92 UserService.updateMyContacts() in home.js aafter localstorage set newMyContacts:  [{"_id":"6440d837f60588934b7c1447","email":"travelagency3111@gmail.com","name":"travel"},{"_id":"6440da64a72c6878e94754f2","email":"aarjupatel0111@gmail.com","name":"mhk"}]
+user.service.js:98 updateMasseges start... MyContacts is :  2
+user.service.js:110 updateMasseges :  6440d822f60588934b7c1446  and data is : [6440d837f60588934b7c1447: null, 6440da64a72c6878e94754f2: null]
+home.component.js:103 error in UserService.updateMyContacts.catch :  TypeError: Cannot read properties of undefined (reading 'then')
+    at home.component.js:96:1
+
+
+afte socketinitalize and updateMyContacts updateMassege have to syncronozed after that all socket event have to initialize and run after socketInstance initialize
