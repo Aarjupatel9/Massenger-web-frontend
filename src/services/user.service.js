@@ -1,46 +1,191 @@
 import AuthService from "./auth.service";
 
-const API_URL = "http://localhost:10001/api/";
-
 class UserService {
+  getUsersMassseges(contacts) {
+    const id = AuthService.getCurrentUserId()
+    return new Promise(function (resolve, reject) {
+      const options = {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methos": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        },
+        body: JSON.stringify({
+          id: id,
+          contacts: contacts
+        }),
+      };
+      fetch(process.env.REACT_APP_API_SERVER + "/getContactsMasseges", options)
+        .then((response) => {
+          // console.log("getUsersMassseges || fetch then response :", response);
+          return response.json();
+        })
+        .then((res) => {
+          console.log("getUsersMassseges || response json parse : ", res);
+          if (res.status == 1) {
+            resolve(res.masseges);
+          } else {
+            reject(0);
+          }
+        })
+        .catch((e) => {
+          console.log("errer : ", e);
+          reject(0);
+        });
+    });
+  }
+  getUserProfileImage(data) {
+    const id = AuthService.getCurrentUserId()
+    return new Promise(function (resolve, reject) {
+      const options = {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methos": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        },
+        body: JSON.stringify({
+          id: id,
+          data:data
+        }),
+      };
+      fetch(process.env.REACT_APP_API_SERVER + "/getUserProfileImage", options)
+        .then((response) => {
+          // console.log("getUserProfileImage || fetch then response :", response);
+          return response.json();
+        })
+        .then((res) => {
+          console.log("getUserProfileImage || response json parse : ", res);
+          if (res.status == 1) {
+            resolve(res);
+          } else {
+            reject(0);
+          }
+        })
+        .catch((e) => {
+          console.log("errer : ", e);
+          reject(0);
+        });
+    });
+  }
   getUserContactList() {
-    return new Promise((resolve, reject) => {
-      resolve(true);
+    const id = AuthService.getCurrentUserId()
+    return new Promise(function (resolve, reject) {
+      const options = {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methos": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        },
+        body: JSON.stringify({
+          id: id,
+        }),
+      };
+      fetch(process.env.REACT_APP_API_SERVER + "/getContactsList", options)
+        .then((response) => {
+          // console.log("getContactsList || fetch then response :", response);
+          return response.json();
+        })
+        .then((res) => {
+          console.log("getContactsList || response json parse : ", res);
+          if (res.status == 1) {
+            resolve(res);
+          } else {
+            reject(0);
+          }
+        })
+        .catch((e) => {
+          console.log("errer : ", e);
+          reject(0);
+        });
     });
   }
 
-  updateUserProfileDetails(username, about) {
+  updateUserDisplayName(displayName) {
     return new Promise((resolve, reject) => {
       const options = {
         method: "POST",
-        // credentials: 'include',
+        credentials: 'include',
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json;charset=UTF-8",
         },
         body: JSON.stringify({
           id: AuthService.getCurrentUserId(),
-          username: username,
-          about: about,
-          token: AuthService.getUserToken(),
+          displayName: displayName,
         }),
       };
-      fetch(API_URL + "auth/updateUserProfile", options)
+      fetch(process.env.REACT_APP_API_SERVER + "/profile/displayName", options)
         .then((response) => response.json())
         .then((response) => {
-          console.log("response in login arrive : ", response);
+          console.log("/profile/displayName || response : ", response);
+          if (response.status > 0) {
+            resolve(response.status);
+          } else {
+            reject(response);
+          }
+        })
+        .catch();
+    });
+  }
+  updateUserAboutInfo(about) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+        body: JSON.stringify({
+          id: AuthService.getCurrentUserId(),
+          about: about,
+        }),
+      };
+      fetch(process.env.REACT_APP_API_SERVER + "/profile/aboutInfo", options)
+        .then((response) => response.json())
+        .then((response) => {
+          console.log("/profile/aboutInfo || response : ", response);
 
           if (response.status > 0) {
-            const oldUser = AuthService.getCurrentUser();
-            var userDetails = {
-              username: username,
-              token: oldUser.token,
-              id: oldUser.id,
-              email: oldUser.email,
-              about: about,
-            };
-            localStorage.setItem("user", JSON.stringify(userDetails));
-            resolve(response);
+            resolve(response.status);
+          } else {
+            reject(response);
+          }
+        })
+        .catch();
+    });
+  }
+  updateUserProfileImage(byteArray) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+        body: JSON.stringify({
+          id: AuthService.getCurrentUserId(),
+          byteArray: byteArray,
+        }),
+      };
+      console.log("updateUserProfileImage || buteArray : ", byteArray.length);
+
+      fetch(process.env.REACT_APP_API_SERVER + "/profile/profileImage", options)
+        .then((response) => response.json())
+        .then((response) => {
+          console.log("/profile/aboutInfo || response : ", response);
+          if (response.status > 0) {
+            resolve(response.status);
           } else {
             reject(response);
           }
@@ -63,7 +208,7 @@ class UserService {
           name: name,
         }),
       };
-      fetch(API_URL + "user/newContactAddForUser", options)
+      fetch(process.env.REACT_APP_API_SERVER + "user/newContactAddForUser", options)
         .then((response) => response.json())
         .then((response) => {
           console.log("response in login arrive : ", response);
@@ -72,26 +217,8 @@ class UserService {
     });
   }
 
-  updateMyContacts() {
-    return new Promise((resolve, reject) => {
-      const options = {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-        body: JSON.stringify({
-          _id: AuthService.getCurrentUserId(),
-        }),
-      };
-      fetch(API_URL + "user/updateMyContacts", options)
-        .then((response) => response.json())
-        .then((response) => {
-          console.log("updateMyContacts response arrive : ", response);
-          resolve(response);
-        });
-    });
-  }
+
+
 
   updateMasseges(MySocket, MyContacts) {
     return new Promise((resolve, reject) => {
@@ -110,8 +237,8 @@ class UserService {
         }
         data[entity._id] = lastMassegeId;
       });
-      
-      
+
+
       console.log(
         "updateMasseges : ",
         AuthService.getCurrentUserId(),
@@ -123,13 +250,13 @@ class UserService {
         console.log(
           "UserService.UpdateMasseges() ||  Socket is initialized and connected to the server"
         );
-        MySocket.emit("UpdateMasseges",  AuthService.getCurrentUserId(), data );
+        MySocket.emit("UpdateMasseges", AuthService.getCurrentUserId(), data);
         resolve(1);
       } else {
         console.log(
-          "UserService.UpdateMasseges() ||  Socket is not initialized or not connected to the server data :",data);
+          "UserService.UpdateMasseges() ||  Socket is not initialized or not connected to the server data :", data);
         console.log()
-        resolve({ event: "UpdateMasseges", value: { id : AuthService.getCurrentUserId(), data : data } });
+        resolve({ event: "UpdateMasseges", value: { id: AuthService.getCurrentUserId(), data: data } });
       }
     });
   }

@@ -26,7 +26,7 @@ export const SetCurrentContact = (CurrentContact) => {
   };
 };
 export const SetMyContacts = (MyContacts) => {
-  console.log("in SetMyContacts action-creaters");
+  // console.log("in SetMyContacts action-creaters");
   return (dispatch) => {
     dispatch({
       type: "SetMyContacts",
@@ -36,7 +36,7 @@ export const SetMyContacts = (MyContacts) => {
 };
 
 export const SetMySocketInstance = (Socket) => {
-  console.log("in SetMySocketInstance action-creaters");
+  // console.log("in SetMySocketInstance action-creaters");
   return (dispatch) => {
     dispatch({
       type: "SetMySocketInstance",
@@ -45,7 +45,7 @@ export const SetMySocketInstance = (Socket) => {
   };
 };
 export const SetStoredEmitEvents = (Socket) => {
-  console.log("in SetStoredEmitEvents action-creaters");
+  // console.log("in SetStoredEmitEvents action-creaters");
   return (dispatch) => {
     dispatch({
       type: "SetStoredEmitEvents",

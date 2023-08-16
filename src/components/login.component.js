@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, useContext } from "react";
 import AuthService from "../services/auth.service";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-
-import { actionCreators } from "././../state/index";
+import { userDetailsTemplate } from "../templates/Templates";
+import { actionCreators } from "../state/index1";
 
 //google apis
 import { GoogleLogin } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
+import userService from "../services/user.service";
+
+import UserContext from "../context/createContext";
 
 function Login() {
+
+  const { isSidebarOpen, setIsSidebarOpen, admin, currentUser, setCurrentUser, mySocket, setMySocket, myContacts, setMyContacts } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [massege, setMassege] = useState("");
   const [registerButton, setRegisterButton] = useState(false);
-
-  const navigate = useNavigate();
-  const dispach = useDispatch();
-  const CurrentUser = useSelector((state) => state.CurrentUser);
-
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState([]);
   const [number, setNumber] = useState("");
@@ -29,8 +31,8 @@ function Login() {
     console.log("Login Success responce : ", response);
     const token1 = response.credential.accessToken;
     const refresh_token1 = response.credential.refreshToken;
-    console.log("Login Success token1 : ", token1);
-    console.log("Login Success r_token1 : ", refresh_token1);
+    // console.log("Login Success token1 : ", token1);
+    // console.log("Login Success r_token1 : ", refresh_token1);
 
     setUser(response);
 
@@ -61,13 +63,13 @@ function Login() {
   };
   const errorMessage = (error) => {
     console.log("Login failed : ", error);
+    setMassege("Login Falied");
   };
 
   function handleLogin(credential) {
     setMassege("");
     setLoading(true);
 
-    // form.validateAll();
     if (credential) {
       if (credential.email_verified) {
         setMassege(
@@ -76,17 +78,18 @@ function Login() {
         setLoading(false);
         return;
       }
+    } else {
+      credential = {
+        number: number,
+        password: password,
+        web: true,
+      };
     }
 
     AuthService.loginService(credential)
       .then((data) => {
-        console.log(
-          "in login component after login localstorage is ",
-          AuthService.getCurrentUser()
-        );
         if (data.status == 1) {
-          dispach(actionCreators.SetCurrentUser(data.userDetails));
-
+          setCurrentUser(data.userDetails);
           window.alert("you login succesfull");
           navigate("/home");
         }
@@ -95,13 +98,13 @@ function Login() {
         var resMessage;
         console.log("in erro login component after login localstorage is ");
         if (error.status == 0) {
-          resMessage =
-            "this email is not register with massege, kindly signup first";
+          resMessage = "security error";
+          // resMessage = "this email is not register with massege, kindly signup first";
           setRegisterButton(true);
         } else if (error.status == 2) {
           resMessage = "wrong password";
-        } else if (error.status == 1) {
-          // resMessage = "wrong password";
+        } else if (error.status == 5) {
+          resMessage = "request failed code : 5";
         } else {
           resMessage = "unhandled status arrive";
         }
@@ -111,33 +114,19 @@ function Login() {
   }
 
   useEffect(() => {
-    if (CurrentUser.token !== "") {
-      navigate("/");
-      console.log("login.js currentUser : ", CurrentUser);
-      console.log("login.js currentUser.token : ", CurrentUser.token);
+    if (currentUser !== userDetailsTemplate) {
+      navigate("/home");
+      console.log("login.js currentUser : ", currentUser);
     }
   }, []);
 
-  function signUpRedirect() {}
 
   return (
     <>
-      {/* <div className="Container">
-        {userData ? (
-          <div>
-            <img src={userData.picture} alt="user image" />
-            <h3>User Logged in</h3>
-            <p>Name: {userData.name}</p>
-            <p>Email Address: {userData.email}</p>
-          </div>
-        ) : (
-          <></>
-        )}
-      </div> */}
       <div className="container ">
         <div className="container MyLoginStyle">
           <div className="FormTag   ml-auto mr-auto">
-            <div className="card card-container p-5">
+            <div className="login-card card-container p-5">
               <div className="form-group text-lg-center text-success">
                 Login Into Massenger
               </div>

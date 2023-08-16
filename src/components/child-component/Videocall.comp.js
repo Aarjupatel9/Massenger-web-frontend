@@ -1,24 +1,23 @@
-import React from "react";
+import React, {useContext} from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import UserContext from "../../context/createContext";
 export default function VideoCall() {
-  const CurrentUser = useSelector((state) => state.CurrentUser);
-  const contactId = useSelector((state) => state.ContactId);
-  const CurrentContact = useSelector((state) => state.CurrentContact);
+ 
+  const { isSidebarOpen, setIsSidebarOpen, currentContact, setCurrentContact, admin, currentUser, setCurrentUser, mySocket, setMySocket, myContacts, setMyContacts, storedEmitEvents, setStoredEmitEvents, contactId, setContactId, massegeArray, setMassegeArray } = useContext(UserContext);
 
   const navigate = useNavigate();
 
   function goBack() {
-    navigate("/home");
+    // navigate("/home");
   }
 
   return (
-    <>
+    <div className="chatsRecyclerView">
       <nav className="navbar navbar-expand-lg navbar-light bg-danger">
         <div className="collapse navbar-collapse" id="navbarText">
           <ul className="navbar-nav mr-auto">
-            <li className="navbar-item">{CurrentContact.name}</li>
+            <li className="navbar-item">{currentContact.name}</li>
           </ul>
         </div>
       </nav>
@@ -34,6 +33,6 @@ export default function VideoCall() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
