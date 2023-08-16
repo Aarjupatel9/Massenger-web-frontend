@@ -2,9 +2,7 @@
   "name": "react-jwt-auth",
   "version": "1.0.0",
   "private": true,
-  
-  "homepage": "https://localhost:3002/app",
-
+  "homepage": "https://localhost:3000/",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
