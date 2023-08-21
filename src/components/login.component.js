@@ -176,7 +176,7 @@ function Login() {
                   </div>
                 </div>
               )}
-              <div className="form-group text-center" htmlFor="loginWithGoogle">
+              {/* <div className="form-group text-center" htmlFor="loginWithGoogle">
                 Or
               </div>
               <div
@@ -192,10 +192,10 @@ function Login() {
                   cookiePolicy={"single_host_origin"}
                   uxMode={"popup"}
                 />
-              </div>
-              <div className="form-group text-center  mt-5">
+              </div> */}
+              {/* <div className="form-group text-center  mt-5">
                 if you not register? <Link to="/signup">Sing Up</Link>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

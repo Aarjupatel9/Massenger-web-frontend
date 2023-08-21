@@ -292,7 +292,6 @@ function Home() {
 
   }
 
-
   useEffect(() => {
     fUpdateContactList();
     fSetContactList();
