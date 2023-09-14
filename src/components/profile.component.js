@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import authService from "../services/auth.service";
 import "./profile.css";
 
-export default function Profile() {
+export default function Profile() { 
 
   const { isSidebarOpen, setIsSidebarOpen, currentContact, setCurrentContact, admin, currentUser, setCurrentUser, mySocket, setMySocket, myContacts, setMyContacts, storedEmitEvents, setStoredEmitEvents, contactId, setContactId, massegeArray, setMassegeArray } = useContext(UserContext);
 
@@ -130,7 +130,7 @@ export default function Profile() {
   };
 
   const removeImage = () => {
-    console.log("removwImage  : || ", process.env.REACT_APP_DEFAULT_PROFILE_IMAGE);
+    console.log("removeImage  : || ", process.env.REACT_APP_DEFAULT_PROFILE_IMAGE);
     setImageData(process.env.REACT_APP_DEFAULT_PROFILE_IMAGE);
     setShowOptions(false);
   };
@@ -181,45 +181,46 @@ export default function Profile() {
               </div> */}
 
               <div
-  className="d-flex flex-column align-items-center text-center p-3 py-5"
-  onMouseEnter={() => setShowOptions(true)}
-  onMouseLeave={() => setShowOptions(false)}
->
-  <div className="profile-image-container">
-    <img
-      alt="profile image"
-      className="rounded-circle mt-5 profile-image"
-      width="200px"
-      src={imageData}
-      onError={(e) => {
-        e.target.src = process.env.REACT_APP_DEFAULT_PROFILE_IMAGE;
-      }}
-    />
-    {showOptions && (
-      <div className="image-options">
-        <label htmlFor="file-input" className="change-image">
-          Change Image
-        </label>
-        <div className="remove-image" onClick={removeImage}>
-          Remove Image
-        </div>
-      </div>
-    )}
-  </div>
-  <span className="font-weight-bold mt-3">
-    Account name: {currentUser.username}
-  </span>
-  <span className="text-black-50">
-    Account number: {currentUser.number}
-  </span>
-  <input
-    type="file"
-    id="file-input"
-    accept="image/*"
-    style={{ display: 'none' }}
-    onChange={handleDrop}
-  />
-</div>
+                className="d-flex flex-column align-items-center text-center p-3 py-5"
+                onMouseEnter={() => setShowOptions(true)}
+                onMouseLeave={() => setShowOptions(false)}
+              >
+                <div className="profile-image-container mb-5">
+                  <img
+                    alt="profile image"
+                    className="rounded-circle mt-5 profile-image"
+                    width="200px"
+                    height="200px"
+                    src={imageData}
+                    onError={(e) => {
+                      e.target.src = process.env.REACT_APP_DEFAULT_PROFILE_IMAGE;
+                    }}
+                  /> <input
+                    type="file"
+                    id="file-input"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleDrop}
+                  />
+                  {showOptions && (
+                    <div className="image-options ">
+                      <label htmlFor="file-input" className="change-image">
+                        Change Image
+                      </label>
+                      <div className="remove-image" onClick={removeImage}>
+                        Remove Image
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <span className="font-weight-bold mt-3">
+                  Account name: {currentUser.username}
+                </span>
+                <span className="text-black-50">
+                  Account number: {currentUser.number}
+                </span>
+               
+              </div>
 
 
             </div>

@@ -21,14 +21,15 @@
     "react-router-dom": "^6.4.0",
     "react-scripts": "5.0.1",
     "react-validation": "^3.0.7",
+    "reactjs-popup": "^2.0.6",
     "redux": "^4.2.0",
     "redux-thunk": "^2.4.2",
     "socket.io-client": "^4.6.1",
     "validator": "^13.7.0"
   },
   "scripts": {
-    "start": "set HTTPS=true&&react-scripts start",
-    "start-http": "react-scripts start",
+    "start-https": "set HTTPS=true&&react-scripts start",
+    "start": "react-scripts start",
     "start-self-update": "nodemon self-restart-git-pull.js",
     "build": "react-scripts build",
     "test": "react-scripts test",

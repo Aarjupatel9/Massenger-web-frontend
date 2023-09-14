@@ -5,13 +5,14 @@ import {
   setCurrentContactReducer,
   setMyContactsReducer,
   setMySocketInstanceReducer,
-  setStoredEmitEventsReducer,
+  setStoredEmitEventsReducer, setBlockedContactsReducer,
 } from "./reducers";
 
 const reducers = combineReducers({
   ContactId: setContactIdReducer,
   CurrentContact: setCurrentContactReducer,
   MyContacts: setMyContactsReducer,
+  BlockedContacts: setBlockedContactsReducer,
   MySocket: setMySocketInstanceReducer,
   StoredEmitEvents  :setStoredEmitEventsReducer,
 });

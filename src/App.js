@@ -18,6 +18,10 @@ import { userDetailsTemplate } from "./templates/Templates";
 
 import UserContext from "./context/createContext";
 
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+
+
 import store from "./state/store";
 import io from "socket.io-client";
 import userService from "./services/user.service";
@@ -54,19 +58,20 @@ function App() {
 
 
   return (
-    <UserContext.Provider value={{ currentContactOnlineStatus, setCurrentContactOnlineStatus, currentUser, setCurrentUser, mySocket, setMySocket,  storedEmitEvents, setStoredEmitEvents, contactId, setContactId, currentContact, setCurrentContact, massegeArray, setMassegeArray, typedMassege, setTypedMassege }} ><div className="App">
-      {/* myContacts, setMyContacts, */}
-      <NavBar />
-      <div className="MainComponents">
-        <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/VedioCall" element={<VideoCall />} />
-          <Route path="/VoiceCall" element={<VoiceCall />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </div>
-    </div></UserContext.Provider>
+    <UserContext.Provider value={{ currentContactOnlineStatus, setCurrentContactOnlineStatus, currentUser, setCurrentUser, mySocket, setMySocket, storedEmitEvents, setStoredEmitEvents, contactId, setContactId, currentContact, setCurrentContact, massegeArray, setMassegeArray, typedMassege, setTypedMassege }} >
+      <div className="App">
+        {/* myContacts, setMyContacts, */}
+        <NavBar />
+        <div className="MainComponents">
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/VedioCall" element={<VideoCall />} />
+            <Route path="/VoiceCall" element={<VoiceCall />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </div>
+      </div></UserContext.Provider>
 
   );
 }

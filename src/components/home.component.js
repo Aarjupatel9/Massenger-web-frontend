@@ -16,6 +16,7 @@ import "../mainstyle.css";
 import { userDetailsTemplate } from "../templates/Templates";
 import authService from "../services/auth.service";
 
+
 function Home() {
 
   const { setCurrentContactOnlineStatus, currentContact, currentUser, setCurrentUser, mySocket, setMySocket, storedEmitEvents, contactId, massegeArray, setMassegeArray } = useContext(UserContext);
@@ -300,13 +301,25 @@ function Home() {
   function fUpdateContactList() {
     userService.getUserContactList()
       .then((data) => {
-        const updatedContacts = data.contacts.map((contact) => {
-          if (contact.profileImageVersion === undefined || contact.profileImageVersion < 1) {
+        var blockedContact = [];
+        const imageUpdatedContacts = data.contacts.map((contact) => {
+          console.log("image version : ", contact);
+          const _id = contact._id;
+          contact._id = _id._id;
+          contact.ProfileImageVersion = _id.ProfileImageVersion;
+          if (contact.ProfileImageVersion === undefined || contact.ProfileImageVersion < 1) {
             contact.imageUrl = "https://massengeruserprofileimage.s3.ap-south-1.amazonaws.com/general-contact-icon.jpg"
           } else {
             contact.imageUrl = "https://massengeruserprofileimage.s3.ap-south-1.amazonaws.com/" + contact._id + ".jpg"
           }
           return contact;
+        });
+        const updatedContacts = imageUpdatedContacts.filter((contact) => {
+          console.log("contact blocked status : ", contact.blocked)
+          if (contact.blocked) {
+            blockedContact.push(contact)
+          }
+          return !contact.blocked;
         });
 
         var oldArray = JSON.parse(localStorage.getItem("MyContacts_basicInfo"));
@@ -322,12 +335,17 @@ function Home() {
           }
         }
 
-        console.log("Home userService.getUserContactList || status : ", oldArray)
+        console.log("Home getUserContactList || oldArray : ", oldArray)
+        console.log("Home getUserContactList || blockedContact : ", blockedContact)
         localStorage.setItem("MyContacts_basicInfo", JSON.stringify(oldArray));
+        localStorage.setItem("BlockedContacts_basicInfo", JSON.stringify(blockedContact));
+        dispatch(actionCreators.SetBlockedContacts(blockedContact));
+
+        // actionCreators.SetBlockedContacts(blockedContact);
         fetchMassegesOfUser(oldArray);
 
         addMyContactsUpdateQueue(3);
-        // fSetContactList();
+        fSetContactList();
       })
       .catch((status) => {
         console.log("Home userService.getUserContactList || error status : ", status)
@@ -339,7 +357,6 @@ function Home() {
       localStorage.getItem("MyContacts_basicInfo")
     );
     if (localMyContacts != null) {
-
       console.log("fSetContactList before setLocalContacts length : ", localMyContacts.length, " , ", localMyContacts);
       setLocalContacts(localMyContacts);
       dispatch(actionCreators.SetMyContacts(localMyContacts));
@@ -436,8 +453,6 @@ function Home() {
       console.log("fetchMassegesOfUser reject : ", reject);
     })
   }
-
-
 
 
   // listenr's function for sockerts
@@ -716,10 +731,13 @@ function Home() {
   }, []);
 
 
- 
+  const onBlockContentClick = () => {
+
+  }
   return (
     <div className="homeDiv">
       <HomeContext.Provider value={{ addMyContactsUpdateQueue, massegeArrayScrollToBottom, setMassegeArrayScrollToBottom, fUpdateContactRankAndLastMassege, fSetMassegeArrayInit, massegeArrayPage, setMassegeArrayPage, fSetMassegeArray }} >
+
         <ContactList />
         <MainDisplayArea />
       </HomeContext.Provider>
