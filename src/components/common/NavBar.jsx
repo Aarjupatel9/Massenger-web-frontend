@@ -1,13 +1,9 @@
 import React, { useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux';
 import { userDetailsTemplate } from '../../templates/Templates';
 import authService from '../../services/auth.service';
-
-import userService from '../../services/user.service';
 import UserContext from '../../context/createContext';
-
-import io from 'socket.io-client'
+import toast from 'react-hot-toast';
 import { useState } from 'react';
 
 
@@ -17,15 +13,25 @@ export default function NavBar() {
     const [isProfile, setIsProfile] = useState(false);
     function localLogOut() {
 
-        const per = window.confirm("are you sure to logout");
-        if (per) {
-            mySocket.disconnect();
-            authService.logout();
-            setCurrentUser(userDetailsTemplate);
-            console.log("after logout currentuser : ", currentUser);
-            window.location.reload();
-            mySocket.disconnect();
-        }
+        toast((t) => (
+            <span >
+              Logout ?
+              <div className='ml-3 btn btn-sm btn-danger' onClick={() => logoutMain()}>
+                yes
+              </div>
+              <div className='ml-3 btn btn-sm btn-success' onClick={() => toast.dismiss(t.id)}>
+                No
+              </div>
+            </span>
+          ));
+    }
+    function logoutMain(){
+        mySocket.disconnect();
+        authService.logout();
+        setCurrentUser(userDetailsTemplate);
+        console.log("after logout currentuser : ", currentUser);
+        window.location.reload();
+        mySocket.disconnect();
     }
 
     function localTest() {

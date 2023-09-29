@@ -6,10 +6,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { userDetailsTemplate } from "../templates/Templates";
 import { actionCreators } from "../state/index1";
 
-//google apis
-import { GoogleLogin } from "@react-oauth/google";
-import jwt_decode from "jwt-decode";
-import userService from "../services/user.service";
+
+import toast from "react-hot-toast";
 
 import UserContext from "../context/createContext";
 
@@ -27,44 +25,7 @@ function Login() {
   const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
 
-  const responseMessage = (response) => {
-    console.log("Login Success responce : ", response);
-    const token1 = response.credential.accessToken;
-    const refresh_token1 = response.credential.refreshToken;
-    // console.log("Login Success token1 : ", token1);
-    // console.log("Login Success r_token1 : ", refresh_token1);
-
-    setUser(response);
-
-    var token = response.credential;
-    const decode = jwt_decode(token);
-    console.log("Login Success : ", decode);
-    console.log("Login Success : ", decode.name);
-    console.log("Login Success : ", decode.email);
-    console.log("Login Success : ", decode.email_verified);
-    console.log("Login Success : ", decode.picture);
-
-    setUserData(decode);
-    handleLogin(decode);
-    /*aud: "754777254417-e177q2glmotv28lllmm7chn9p6krevpi.apps.googleusercontent.com";
-    azp: "754777254417-e177q2glmotv28lllmm7chn9p6krevpi.apps.googleusercontent.com";
-    email: "aarjupatel922003@gmail.com";
-    email_verified: true;
-    exp: 1681824150;
-    family_name: "Patel";
-    given_name: "Aarju";
-    iat: 1681820550;
-    iss: "https://accounts.google.com";
-    jti: "5664e4469b85b6c6ecc695f5c6f86962e4e07d3b";
-    name: "Aarju Patel";
-    nbf: 1681820250;
-    picture: "https://lh3.googleusercontent.com/a/AGNmyxZFTDO68K2LSEqoVbmjm8-AlE4FcRycI-YxXBNP=s96-c";
-    sub: "107986972506806710128";*/
-  };
-  const errorMessage = (error) => {
-    console.log("Login failed : ", error);
-    setMassege("Login Falied");
-  };
+ 
 
   function handleLogin(credential) {
     setMassege("");
@@ -73,7 +34,7 @@ function Login() {
     if (credential) {
       if (credential.email_verified) {
         setMassege(
-          "Your Email adress is not varified by google plese varify first to open account"
+          "Your Email address is not verified by google please verify first to open account"
         );
         setLoading(false);
         return;
@@ -86,17 +47,16 @@ function Login() {
       };
     }
 
-    AuthService.loginService(credential)
-      .then((data) => {
-        if (data.status == 1) {
-          setCurrentUser(data.userDetails);
-          window.alert("you login succesfull");
-          navigate("/home");
-        }
-      })
+    const loginPromise = AuthService.loginService(credential);
+    loginPromise.then((data) => {
+      if (data.status == 1) {
+        document.cookie = `token=${JSON.stringify(data.token)}`;
+        setCurrentUser(data.userDetails);
+        navigate("/home");
+      }
+    })
       .catch((error) => {
         var resMessage;
-        console.log("in erro login component after login localstorage is ");
         if (error.status == 0) {
           resMessage = "security error";
           // resMessage = "this email is not register with massege, kindly signup first";
@@ -111,6 +71,24 @@ function Login() {
         setLoading(false);
         setMassege(resMessage);
       });
+
+    toast.promise(
+      loginPromise,
+      {
+        loading: 'plese wait while login',
+        success: <b>login succesfull</b>,
+        error: <b>login failed</b>,
+      },
+      {
+        success: {
+          duration: 2000,
+        },
+        error: {
+          duration: 2000,
+        },
+      }
+    );
+
   }
 
   useEffect(() => {

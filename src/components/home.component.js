@@ -16,17 +16,29 @@ import "../mainstyle.css";
 import { userDetailsTemplate } from "../templates/Templates";
 import authService from "../services/auth.service";
 
+import toast from "react-hot-toast";
 
 function Home() {
-
-  const { setCurrentContactOnlineStatus, currentContact, currentUser, setCurrentUser, mySocket, setMySocket, storedEmitEvents, contactId, massegeArray, setMassegeArray } = useContext(UserContext);
+  const {
+    setCurrentContactOnlineStatus,
+    currentContact,
+    currentUser,
+    setCurrentUser,
+    mySocket,
+    setMySocket,
+    storedEmitEvents,
+    contactId,
+    massegeArray,
+    setMassegeArray,
+  } = useContext(UserContext);
   // myContacts, setMyContacts,
 
   const myContacts = useSelector((state) => state.MyContacts);
   const dispatch = useDispatch();
 
   const [massegeArrayPage, setMassegeArrayPage] = useState(1);
-  const [massegeArrayScrollToBottom, setMassegeArrayScrollToBottom] = useState(1);
+  const [massegeArrayScrollToBottom, setMassegeArrayScrollToBottom] =
+    useState(1);
   const [massegeArrayWhole, setMassegeArrayWhole] = useState([]);
 
   const [localContacts, setLocalContacts] = useState([]);
@@ -45,9 +57,13 @@ function Home() {
     console.log("useEffect localContacts start ", localContacts.length);
   }, [localContacts]);
 
-
   useEffect(() => {
-    console.log("home useffect , current contact is changed , ", contactId, " , ", currentContact);
+    console.log(
+      "home useffect , current contact is changed , ",
+      contactId,
+      " , ",
+      currentContact
+    );
     contactIdRef.current = contactId;
 
     addMyContactsUpdateQueue(4, currentContact._id);
@@ -62,14 +78,22 @@ function Home() {
     // if()
     console.log("fSetMassegeArray || start : ");
 
-    var startIndex = massegeArrayWhole.length - (massegeArrayPage * PAGE_SIZE);
-    var endIndex = massegeArrayWhole.length - ((massegeArrayPage - 1) * PAGE_SIZE);
+    var startIndex = massegeArrayWhole.length - massegeArrayPage * PAGE_SIZE;
+    var endIndex =
+      massegeArrayWhole.length - (massegeArrayPage - 1) * PAGE_SIZE;
     if (startIndex < 0) {
       startIndex = 0;
       endIndex = 100;
     }
     const messagesForPage = massegeArrayWhole.slice(startIndex, endIndex);
-    console.log("Home fSetMassegeArray : ", startIndex, " , ", endIndex, " , ", messagesForPage.length);
+    console.log(
+      "Home fSetMassegeArray : ",
+      startIndex,
+      " , ",
+      endIndex,
+      " , ",
+      messagesForPage.length
+    );
     setMassegeArray(messagesForPage);
   };
 
@@ -89,40 +113,37 @@ function Home() {
       myContactsUpdateQueue.push(() => {
         fUpdateContactRankAndLastMassege(data[0], data[1]);
         processUpdateQueue();
-      })
+      });
     } else if (type == 2) {
       myContactsUpdateQueue.push(() => {
         fSetMassegeArriveCounter(data[0]);
         processUpdateQueue();
-      })
+      });
     } else if (type == 3) {
       myContactsUpdateQueue.push(() => {
         fSetContactList();
         processUpdateQueue();
-      })
+      });
     } else if (type == 4) {
       myContactsUpdateQueue.push(() => {
         fRemoveNewArrivalValue(data[0]);
         processUpdateQueue();
-      })
-
+      });
     } else if (type == 5) {
       myContactsUpdateQueue.push(() => {
         fUpdateLastMassegeOfContacts(data[0]);
         processUpdateQueue();
-      })
-    }
-    else if (type == 6) {
+      });
+    } else if (type == 6) {
       myContactsUpdateQueue.push(() => {
-        updateTypingStatusToContact(data[0]);// typing status update
+        updateTypingStatusToContact(data[0]); // typing status update
         processUpdateQueue();
-      })
-    }
-    else if (type == 7) {
+      });
+    } else if (type == 7) {
       myContactsUpdateQueue.push(() => {
-        updateLastMassegeToContact(data[0]);// for single contact specially for typing event
+        updateLastMassegeToContact(data[0]); // for single contact specially for typing event
         processUpdateQueue();
-      })
+      });
     }
 
     if (myContactsUpdateQueue.length === 1) {
@@ -135,15 +156,16 @@ function Home() {
     const messages = getMessagesFromLocalStorage(CID);
     if (messages.length > 0) {
       lastMassege = messages[messages.length - 1].massege;
-      const truncatedMessage = lastMassege.length > 20
-        ? `${lastMassege.slice(0, 20)}...`
-        : lastMassege;
+      const truncatedMessage =
+        lastMassege.length > 20
+          ? `${lastMassege.slice(0, 20)}...`
+          : lastMassege;
       lastMassege = truncatedMessage;
     } else {
       lastMassege = "";
     }
-    setLocalContacts(prevLocalContacts => {
-      const updatedContacts = prevLocalContacts.map(contact => {
+    setLocalContacts((prevLocalContacts) => {
+      const updatedContacts = prevLocalContacts.map((contact) => {
         if (contact._id === CID) {
           contact.lastMassege = lastMassege;
           return contact;
@@ -156,7 +178,7 @@ function Home() {
   }
 
   function updateTypingStatusToContact(CID) {
-    var timeoutId = timerForTipingEvent[CID]
+    var timeoutId = timerForTipingEvent[CID];
     if (timeoutId) {
       clearTimeout(timeoutId); // remove previous timeOut
     }
@@ -165,11 +187,11 @@ function Home() {
       addMyContactsUpdateQueue(7, CID);
     }, 1500);
 
-    timerForTipingEvent[CID] = timeoutId;//timeOut set
+    timerForTipingEvent[CID] = timeoutId; //timeOut set
 
     //now update in UI
-    setLocalContacts(prevLocalContacts => {
-      const updatedContacts = prevLocalContacts.map(contact => {
+    setLocalContacts((prevLocalContacts) => {
+      const updatedContacts = prevLocalContacts.map((contact) => {
         if (contact._id === CID) {
           contact.lastMassege = "typing...";
           return contact;
@@ -179,12 +201,11 @@ function Home() {
       dispatch(actionCreators.SetMyContacts(updatedContacts));
       return updatedContacts;
     });
-
   }
 
   function fRemoveNewArrivalValue(idToRemove) {
-    setLocalContacts(prevLocalContacts => {
-      const updatedContacts = prevLocalContacts.map(contact => {
+    setLocalContacts((prevLocalContacts) => {
+      const updatedContacts = prevLocalContacts.map((contact) => {
         if (contact._id === idToRemove) {
           const { unSeenMassegeCounter, ...updatedContact } = contact;
           return updatedContact;
@@ -192,7 +213,10 @@ function Home() {
         return contact;
       });
       dispatch(actionCreators.SetMyContacts(updatedContacts));
-      localStorage.setItem("MyContacts_basicInfo", JSON.stringify(updatedContacts));
+      localStorage.setItem(
+        "MyContacts_basicInfo",
+        JSON.stringify(updatedContacts)
+      );
       return updatedContacts;
     });
   }
@@ -204,10 +228,15 @@ function Home() {
     } else if (type == 0) {
       connect_id = massegeOBJ.to;
     }
-    console.log("fUpdateContactRankAndLastMassege || start contact_id : ", connect_id);
+    console.log(
+      "fUpdateContactRankAndLastMassege || start contact_id : ",
+      connect_id
+    );
 
-    setLocalContacts(prevLocalContacts => {
-      const indexToUpdate = prevLocalContacts.findIndex(item => item._id == connect_id);
+    setLocalContacts((prevLocalContacts) => {
+      const indexToUpdate = prevLocalContacts.findIndex(
+        (item) => item._id == connect_id
+      );
       console.log("fSetMassegeArriveCounter || start index : ", indexToUpdate);
 
       if (indexToUpdate != -1) {
@@ -228,23 +257,30 @@ function Home() {
         return prevLocalContacts;
       }
     });
-
   }
 
   function fSetMassegeArriveCounter(massegeObj) {
-    setLocalContacts(prevLocalContacts => {
-      const indexToUpdate = prevLocalContacts.findIndex(item => item._id == massegeObj.from);
+    setLocalContacts((prevLocalContacts) => {
+      const indexToUpdate = prevLocalContacts.findIndex(
+        (item) => item._id == massegeObj.from
+      );
       console.log("fSetMassegeArriveCounter || start index : ", indexToUpdate);
 
       if (indexToUpdate != -1) {
         const newData = [...prevLocalContacts];
         var counter = 0;
-        console.log("fSetMassegeArriveCounter || before counter cond. : ", newData[indexToUpdate].unSeenMassegeCounter);
+        console.log(
+          "fSetMassegeArriveCounter || before counter cond. : ",
+          newData[indexToUpdate].unSeenMassegeCounter
+        );
         if (parseInt(newData[indexToUpdate].unSeenMassegeCounter) > 0) {
           counter = parseInt(newData[indexToUpdate].unSeenMassegeCounter);
         }
         counter++;
-        newData[indexToUpdate] = { ...newData[indexToUpdate], unSeenMassegeCounter: counter };
+        newData[indexToUpdate] = {
+          ...newData[indexToUpdate],
+          unSeenMassegeCounter: counter,
+        };
 
         if (indexToUpdate !== -1) {
           const objectToMove = newData.splice(indexToUpdate, 1)[0];
@@ -267,7 +303,8 @@ function Home() {
     if (contactId == null) {
       return;
     }
-    var massegePointer = "masseges_" + authService.getCurrentUserId() + contactId;
+    var massegePointer =
+      "masseges_" + authService.getCurrentUserId() + contactId;
     var sortedMA = [];
     const ma = JSON.parse(localStorage.getItem(massegePointer));
     // console.log("fSetMassegeArrayInit || ma ia : ", currentContact);
@@ -284,13 +321,23 @@ function Home() {
     }
     setMassegeArrayScrollToBottom((prev) => prev + 1);
 
-    const filteredMasseges = sortedMA.filter((massege) => massege.massegeStatus < 3 && massege.from === contactId);
-    const updatedFilterMasseges = filteredMasseges.map((e) => { e.massegeStatus = 3; return e; })
+    const filteredMasseges = sortedMA.filter(
+      (massege) => massege.massegeStatus < 3 && massege.from === contactId
+    );
+    const updatedFilterMasseges = filteredMasseges.map((e) => {
+      e.massegeStatus = 3;
+      return e;
+    });
     console.log("filtermassege : ", updatedFilterMasseges);
     if (filteredMasseges.length > 0) {
-      mySocket.emit("massege_reach_read_receipt", 4, authService.getCurrentUserId(), updatedFilterMasseges, contactId);// emit the massegeStatus 3 event
+      mySocket.emit(
+        "massege_reach_read_receipt",
+        4,
+        authService.getCurrentUserId(),
+        updatedFilterMasseges,
+        contactId
+      ); // emit the massegeStatus 3 event
     }
-
   }
 
   useEffect(() => {
@@ -299,7 +346,8 @@ function Home() {
   }, []);
 
   function fUpdateContactList() {
-    userService.getUserContactList()
+    const contactListPromise = userService.getUserContactList();
+    contactListPromise
       .then((data) => {
         var blockedContact = [];
         const imageUpdatedContacts = data.contacts.map((contact) => {
@@ -307,38 +355,54 @@ function Home() {
           const _id = contact._id;
           contact._id = _id._id;
           contact.ProfileImageVersion = _id.ProfileImageVersion;
-          if (contact.ProfileImageVersion === undefined || contact.ProfileImageVersion < 1) {
-            contact.imageUrl = "https://massengeruserprofileimage.s3.ap-south-1.amazonaws.com/general-contact-icon.jpg"
+          if (
+            contact.ProfileImageVersion === undefined ||
+            contact.ProfileImageVersion < 1
+          ) {
+            contact.imageUrl =
+              "https://massengeruserprofileimage.s3.ap-south-1.amazonaws.com/general-contact-icon.jpg";
           } else {
-            contact.imageUrl = "https://massengeruserprofileimage.s3.ap-south-1.amazonaws.com/" + contact._id + ".jpg"
+            contact.imageUrl =
+              "https://massengeruserprofileimage.s3.ap-south-1.amazonaws.com/" +
+              contact._id +
+              ".jpg";
           }
           return contact;
         });
         const updatedContacts = imageUpdatedContacts.filter((contact) => {
-          console.log("contact blocked status : ", contact.blocked)
+          console.log("contact blocked status : ", contact.blocked);
           if (contact.blocked) {
-            blockedContact.push(contact)
+            blockedContact.push(contact);
           }
           return !contact.blocked;
         });
 
         var oldArray = JSON.parse(localStorage.getItem("MyContacts_basicInfo"));
-        console.log("Home userService.getUserContactList || status after get from local storage : ", oldArray)
+        console.log(
+          "Home userService.getUserContactList || status after get from local storage : ",
+          oldArray
+        );
 
         if (oldArray == null) {
           oldArray = [];
         }
         for (let i = 0; i < updatedContacts.length; i++) {
           const object = updatedContacts[i];
-          if (!oldArray.some(item => item._id == object._id)) {
+          if (!oldArray.some((item) => item._id == object._id)) {
             oldArray.push(object);
           }
         }
 
-        console.log("Home getUserContactList || oldArray : ", oldArray)
-        console.log("Home getUserContactList || blockedContact : ", blockedContact)
+        console.log("Home getUserContactList || oldArray : ", oldArray);
+        console.log(
+          "Home getUserContactList || blockedContact : ",
+          blockedContact
+        );
         localStorage.setItem("MyContacts_basicInfo", JSON.stringify(oldArray));
-        localStorage.setItem("BlockedContacts_basicInfo", JSON.stringify(blockedContact));
+        localStorage.setItem(
+          "BlockedContacts_basicInfo",
+          JSON.stringify(blockedContact)
+        );
         dispatch(actionCreators.SetBlockedContacts(blockedContact));
 
         // actionCreators.SetBlockedContacts(blockedContact);
@@ -348,8 +412,28 @@ function Home() {
         fSetContactList();
       })
       .catch((status) => {
-        console.log("Home userService.getUserContactList || error status : ", status)
+        console.log(
+          "Home userService.getUserContactList || error status : ",
+          status
+        );
       });
+
+    toast.promise(
+      contactListPromise,
+      {
+        loading: "updating contacts...",
+        success: <b>contact is updated</b>,
+        error: <b>problem while updating contact list</b>,
+      },
+      {
+        success: {
+          duration: 500,
+        },
+        error: {
+          duration: 2000,
+        },
+      }
+    );
   }
 
   function fSetContactList() {
@@ -357,7 +441,12 @@ function Home() {
       localStorage.getItem("MyContacts_basicInfo")
     );
     if (localMyContacts != null) {
-      console.log("fSetContactList before setLocalContacts length : ", localMyContacts.length, " , ", localMyContacts);
+      console.log(
+        "fSetContactList before setLocalContacts length : ",
+        localMyContacts.length,
+        " , ",
+        localMyContacts
+      );
       setLocalContacts(localMyContacts);
       dispatch(actionCreators.SetMyContacts(localMyContacts));
     } else {
@@ -367,14 +456,16 @@ function Home() {
   }
 
   function getTruncatedMasssege(lastMassege) {
-    const truncatedMessage = lastMassege.length > 12
-      ? `${lastMassege.slice(0, 12)}...`
-      : lastMassege;
+    const truncatedMessage =
+      lastMassege.length > 12 ? `${lastMassege.slice(0, 12)}...` : lastMassege;
     return truncatedMessage;
   }
   function getMessagesFromLocalStorage(contactId) {
-    var messagesString = "masseges_" + authService.getCurrentUserId() + contactId;
-    const array = messagesString ? JSON.parse(localStorage.getItem(messagesString)) : [];
+    var messagesString =
+      "masseges_" + authService.getCurrentUserId() + contactId;
+    const array = messagesString
+      ? JSON.parse(localStorage.getItem(messagesString))
+      : [];
     return array;
   }
   function fUpdateLastMassegeOfContacts(myContacts) {
@@ -383,16 +474,20 @@ function Home() {
     var lastMassege = "";
 
     function getLastMessageTime(CID) {
-
       const messages = getMessagesFromLocalStorage(CID);
       // console.log("getLastMessageTime || masseges : ", messages, " , ", CID);
-      const countMessagesWithStatusLessThan2 = messages.filter(message => message.massegeStatus <= 2 && message.from == CID).length;
+      const countMessagesWithStatusLessThan2 = messages.filter(
+        (message) => message.massegeStatus <= 2 && message.from == CID
+      ).length;
       if (messages.length > 0) {
         lastMassege = messages[messages.length - 1].massege;
         lastMassege = getTruncatedMasssege(lastMassege);
-        return [messages[messages.length - 1].time, countMessagesWithStatusLessThan2];
+        return [
+          messages[messages.length - 1].time,
+          countMessagesWithStatusLessThan2,
+        ];
       }
-      lastMassege = ""
+      lastMassege = "";
       return [0, countMessagesWithStatusLessThan2];
     }
 
@@ -409,21 +504,30 @@ function Home() {
       return lastMessageTimeB - lastMessageTimeA;
     });
 
-    console.log("fUpdateLastMassegeOfContacts || sortedContacts : ", sortedContacts);
-    console.log("fUpdateLastMassegeOfContacts || lastMassegeObj : ", lastMassegeObj);
+    console.log(
+      "fUpdateLastMassegeOfContacts || sortedContacts : ",
+      sortedContacts
+    );
+    console.log(
+      "fUpdateLastMassegeOfContacts || lastMassegeObj : ",
+      lastMassegeObj
+    );
 
     const updatedArray = sortedContacts.map((obj) => {
       var counter = 0;
       if (unSeenMassegsObj.hasOwnProperty(obj._id)) {
         counter = unSeenMassegsObj[obj._id];
       }
-      return ({
+      return {
         ...obj,
         lastMassege: lastMassegeObj[obj._id],
         unSeenMassegeCounter: counter,
-      })
+      };
     });
-    console.log("fUpdateLastMassegeOfContacts || sortedContacts : ", updatedArray);
+    console.log(
+      "fUpdateLastMassegeOfContacts || sortedContacts : ",
+      updatedArray
+    );
 
     setLocalContacts(updatedArray);
     dispatch(actionCreators.SetMyContacts(updatedArray));
@@ -431,29 +535,51 @@ function Home() {
   }
 
   function fetchMassegesOfUser(contacts) {
-    userService.getUsersMassseges(contacts).then((data) => {
-      console.log(data);
-      for (const id in data) {
-        if (data.hasOwnProperty(id)) {
-          const localMassegeArray = data[id];
-          const massegePointer = "masseges_" + authService.getCurrentUserId() + id;
-          localStorage.setItem(massegePointer, JSON.stringify(localMassegeArray))
+    const massegeFetchPromise = userService.getUsersMassseges(contacts);
+    massegeFetchPromise
+      .then((data) => {
+        console.log(data);
+        for (const id in data) {
+          if (data.hasOwnProperty(id)) {
+            const localMassegeArray = data[id];
+            const massegePointer =
+              "masseges_" + authService.getCurrentUserId() + id;
+            localStorage.setItem(
+              massegePointer,
+              JSON.stringify(localMassegeArray)
+            );
+          }
         }
-      }
-      if (contactId) {
-        if (data.hasOwnProperty(contactId)) {
-          const localMassegeArray = data[contactId];
-          setMassegeArray(localMassegeArray);
+        if (contactId) {
+          if (data.hasOwnProperty(contactId)) {
+            const localMassegeArray = data[contactId];
+            setMassegeArray(localMassegeArray);
+          }
         }
-      }
-      // fUpdateLastMassegeOfContacts(contacts);
-      addMyContactsUpdateQueue(5, contacts);
+        // fUpdateLastMassegeOfContacts(contacts);
+        addMyContactsUpdateQueue(5, contacts);
+      })
+      .catch((reject) => {
+        console.log("fetchMassegesOfUser reject : ", reject);
+      });
 
-    }).catch((reject) => {
-      console.log("fetchMassegesOfUser reject : ", reject);
-    })
+    toast.promise(
+      massegeFetchPromise,
+      {
+        loading: "updating massege...",
+        success: <b>contact is updated</b>,
+        error: <b>problem while updating contact list</b>,
+      },
+      {
+        success: {
+          duration: 20,
+        },
+        error: {
+          duration: 2000,
+        },
+      }
+    );
   }
-
 
   // listenr's function for sockerts
   function new_massege_from_server(args, socket) {
@@ -461,7 +587,9 @@ function Home() {
     var massegeObj = args[1];
     console.log(
       "socket event new_massege_from_server || :",
-      massegeObj, " , contactId ", contactIdRef.current
+      massegeObj,
+      " , contactId ",
+      contactIdRef.current
     );
 
     const dataArray = [];
@@ -473,27 +601,27 @@ function Home() {
       console.log("inseide contactId open and massege arrive ");
       setMassegeArray((prevMessages) => [...prevMessages, massegeObj]);
       setMassegeArrayScrollToBottom((prev) => prev + 1);
-      addMyContactsUpdateQueue(1, massegeObj, 1);//tyoe=1
+      addMyContactsUpdateQueue(1, massegeObj, 1); //tyoe=1
     } else {
-      addMyContactsUpdateQueue(2, massegeObj);//tyoe=2
+      addMyContactsUpdateQueue(2, massegeObj); //tyoe=2
     }
 
     //update contact list lastmassege and rank
 
     dataArray.push(massegeObj);
-    socket.emit("massege_reach_read_receipt", 3, authService.getCurrentUserId(), dataArray);
+    socket.emit(
+      "massege_reach_read_receipt",
+      3,
+      authService.getCurrentUserId(),
+      dataArray
+    );
 
     //stro massege to localStorage
-    const massegePointer = "masseges_" + AuthService.getCurrentUserId() + massegeObj.from;
-    var localMasseege = JSON.parse(
-      localStorage.getItem(massegePointer)
-    );
+    const massegePointer =
+      "masseges_" + AuthService.getCurrentUserId() + massegeObj.from;
+    var localMasseege = JSON.parse(localStorage.getItem(massegePointer));
     if (localMasseege != undefined || localMasseege != null) {
-      if (
-        !localMasseege.some(
-          (message) => message.time === massegeObj.time
-        )
-      ) {
+      if (!localMasseege.some((message) => message.time === massegeObj.time)) {
         // console.log("before push and store i localstoreage");
         localMasseege.push(massegeObj);
         localStorage.setItem(massegePointer, JSON.stringify(localMasseege));
@@ -507,26 +635,34 @@ function Home() {
   }
 
   function massege_reach_read_receipt(args, socket) {
-    var requestCode = args[0]
-    console.log("massege_reach_read_receipt || start ")
+    var requestCode = args[0];
+    console.log("massege_reach_read_receipt || start ");
     if (requestCode == 1) {
-      var data = args[1]
+      var data = args[1];
       try {
         var viewStatus = data["massegeStatus"];
         var massege_sent_time = data["time"];
         var sender_id = data["from"];
         var receiver_id = data["to"];
-        console.log("massege_reach_read_receipt", "sender : ", receiver_id, " , cc : ", contactIdRef.current, " status : ", data);
-
+        console.log(
+          "massege_reach_read_receipt",
+          "sender : ",
+          receiver_id,
+          " , cc : ",
+          contactIdRef.current,
+          " status : ",
+          data
+        );
 
         // update view status into database
         try {
-          const massegePointer = "masseges_" + AuthService.getCurrentUserId() + receiver_id;
+          const massegePointer =
+            "masseges_" + AuthService.getCurrentUserId() + receiver_id;
           var localMasseege = localStorage.getItem(massegePointer);
           // console.log("massege_reach_read_receipt", "localMassege : ", localMasseege);
           localMasseege = JSON.parse(localMasseege);
           // console.log("massege_reach_read_receipt", "after localMassege : ", localMasseege);
-          localMasseege = localMasseege.map(message => {
+          localMasseege = localMasseege.map((message) => {
             if (message.time === massege_sent_time) {
               if (message.massegeStatus < viewStatus) {
                 return { ...message, massegeStatus: viewStatus };
@@ -548,9 +684,13 @@ function Home() {
 
         var xArray = [];
         try {
-
           xArray.push(data);
-          socket.emit("massege_reach_read_receipt_acknowledgement", 1, authService.getCurrentUserId(), xArray)
+          socket.emit(
+            "massege_reach_read_receipt_acknowledgement",
+            1,
+            authService.getCurrentUserId(),
+            xArray
+          );
           // console.log("massege_reach_read_receipt", "massege_reach_read_receipt_acknowledgement event emitted")
         } catch (e) {
           console.log("massege_reach_read_receipt", "Exception || e : ", e);
@@ -558,9 +698,11 @@ function Home() {
       } catch (e) {
         console.log("massege_reach_read_receipt", "Exception || e:", e);
       }
-
     } else {
-      console.log("massege_reach_read_receipt", "onMassegeReachReadReceipt || request code :$requestCode")
+      console.log(
+        "massege_reach_read_receipt",
+        "onMassegeReachReadReceipt || request code :$requestCode"
+      );
     }
   }
 
@@ -569,20 +711,26 @@ function Home() {
     const user_id = args[1];
     const fa = args[2];
     const contact_id = args[3];
-    console.log("massege_reach_read_receipt_acknowledgement , ", contact_id, " , l ", fa);
+    console.log(
+      "massege_reach_read_receipt_acknowledgement , ",
+      contact_id,
+      " , l ",
+      fa
+    );
     if (contact_id != null) {
-      var massegePointer = "masseges_" + authService.getCurrentUserId() + contact_id;
+      var massegePointer =
+        "masseges_" + authService.getCurrentUserId() + contact_id;
       try {
-
         const ma = JSON.parse(localStorage.getItem(massegePointer));
         // console.log("current contact is : ", currentContact);
         // console.log("ma length is : ", ma.length);
         // console.log("fa length is : ", fa.length);
 
-
         // Update the original ma array with the updatedMessages
         const updatedMa = ma.map((message) => {
-          const updatedMessage = fa.find((updatedMsg) => updatedMsg.time === message.time);
+          const updatedMessage = fa.find(
+            (updatedMsg) => updatedMsg.time === message.time
+          );
           // if (updatedMessage) {
           //   console.log("enter in side updated ", updatedMessage);
           // }
@@ -593,8 +741,6 @@ function Home() {
           setMassegeArray(updatedMa);
         }
         localStorage.setItem(massegePointer, JSON.stringify(updatedMa));
-
-
       } catch (e) {
         setMassegeArray([]);
         console.log("error is chatsRecyclerView || e : ", e);
@@ -626,8 +772,8 @@ function Home() {
               current_date.getDate() === date.getDate()
             ) {
               const formatted = date.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
+                hour: "2-digit",
+                minute: "2-digit",
               });
               setCurrentContactOnlineStatus(`last seen at ${formatted}`);
             } else if (
@@ -636,13 +782,21 @@ function Home() {
               current_date.getDate() === date.getDate() + 1
             ) {
               const formatted = date.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
+                hour: "2-digit",
+                minute: "2-digit",
               });
-              setCurrentContactOnlineStatus(`last seen yesterday at ${formatted}`);
+              setCurrentContactOnlineStatus(
+                `last seen yesterday at ${formatted}`
+              );
             } else {
-              const formatted = date.toISOString().slice(0, 19).replace('T', ' ');
-              const cur_formatted = current_date.toISOString().slice(0, 19).replace('T', ' ');
+              const formatted = date
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " ");
+              const cur_formatted = current_date
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " ");
               setCurrentContactOnlineStatus(`last seen at ${formatted}`);
             }
           }
@@ -655,26 +809,23 @@ function Home() {
     } else {
       console.log("onlineStatusArgs is null");
     }
-
   }
 
   function contact_massege_typing_event(args) {
     console.log("contact_massege_typing_event || start args : ", args);
 
-    addMyContactsUpdateQueue(6, args[0])
-
+    addMyContactsUpdateQueue(6, args[0]);
   }
 
   useEffect(() => {
-
     const socket = io(process.env.REACT_APP_SOCKET_SERVER, {
       withCredentials: true,
       extraHeaders: {
-        "token": "abcd"
+        token: "abcd",
       },
       auth: {
-        id: AuthService.getCurrentUserId()
-      }
+        id: AuthService.getCurrentUserId(),
+      },
     });
 
     socket.on("connect", () => {
@@ -689,8 +840,6 @@ function Home() {
         console.log("Onconnect || event : ", event, " args : ", value);
         socket.emit(event, value.id, value.data);
       });
-
-
     });
 
     socket.on("logoutEvent", (status) => {
@@ -698,7 +847,9 @@ function Home() {
       socket.disconnect();
       AuthService.logout();
       setCurrentUser(userDetailsTemplate);
-      window.alert("you are logout due to android session is started");
+      toast.error("you are logout due to android session is started", {
+        duration: 5000,
+      });
       window.location.reload();
     });
 
@@ -707,37 +858,42 @@ function Home() {
     });
 
     socket.on("massege_reach_read_receipt", (...args) => {
-
       massege_reach_read_receipt(args, socket);
     });
 
     socket.on("massege_reach_read_receipt_acknowledgement", (...args) => {
       massege_reach_read_receipt_acknowledgement(args, socket);
-    })
+    });
 
     socket.on("CheckContactOnlineStatus_return", (...args) => {
       CheckContactOnlineStatusReturn(args);
-    })
+    });
     socket.on("contact_massege_typing_event", (...args) => {
       contact_massege_typing_event(args);
-    })
+    });
 
     setMySocket(socket);
 
     return () => {
       socket.disconnect();
     };
-
   }, []);
 
-
-  const onBlockContentClick = () => {
-
-  }
+  const onBlockContentClick = () => {};
   return (
     <div className="homeDiv">
-      <HomeContext.Provider value={{ addMyContactsUpdateQueue, massegeArrayScrollToBottom, setMassegeArrayScrollToBottom, fUpdateContactRankAndLastMassege, fSetMassegeArrayInit, massegeArrayPage, setMassegeArrayPage, fSetMassegeArray }} >
-
+      <HomeContext.Provider
+        value={{
+          addMyContactsUpdateQueue,
+          massegeArrayScrollToBottom,
+          setMassegeArrayScrollToBottom,
+          fUpdateContactRankAndLastMassege,
+          fSetMassegeArrayInit,
+          massegeArrayPage,
+          setMassegeArrayPage,
+          fSetMassegeArray,
+        }}
+      >
         <ContactList />
         <MainDisplayArea />
       </HomeContext.Provider>

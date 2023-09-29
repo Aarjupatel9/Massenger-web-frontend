@@ -9,8 +9,9 @@ import { userDetailsTemplate } from "../templates/Templates";
 import { useEffect } from "react";
 import authService from "../services/auth.service";
 import "./profile.css";
+import toast from "react-hot-toast";
 
-export default function Profile() { 
+export default function Profile() {
 
   const { isSidebarOpen, setIsSidebarOpen, currentContact, setCurrentContact, admin, currentUser, setCurrentUser, mySocket, setMySocket, myContacts, setMyContacts, storedEmitEvents, setStoredEmitEvents, contactId, setContactId, massegeArray, setMassegeArray } = useContext(UserContext);
 
@@ -33,30 +34,59 @@ export default function Profile() {
     var pass = false;
     if (about != currentUser.about) {
       pass = true;
-      userService.updateUserAboutInfo(about).then((status) => {
+      const imagePromise = userService.updateUserAboutInfo(about);
+      imagePromise.then((status) => {
         const oldUser = currentUser;
         oldUser.about = about;
         localStorage.setItem("user", JSON.stringify(oldUser));
         setCurrentUser(oldUser);
-        alert("About info is updated")
       }).catch((error) => {
-        alert("About info is not updated")
         console.log("userService.updateUserAboutInfo || error : ", error);
       })
+      toast.promise(
+        imagePromise,
+        {
+          loading: 'updating About information...',
+          success: <b>About is updated</b>,
+          error: <b>problem while updating About information</b>,
+        },
+        {
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 2000,
+          },
+        }
+      );
     }
-
     if (displayName != currentUser.displayName) {
       pass = true;
-      userService.updateUserDisplayName(displayName).then((status) => {
+      const imagePromise = userService.updateUserDisplayName(displayName);
+      imagePromise.then((status) => {
         const oldUser = currentUser;
         oldUser.displayName = displayName;
         localStorage.setItem("user", JSON.stringify(oldUser));
         setCurrentUser(oldUser);
-        alert("display name is updated")
       }).catch((error) => {
-        alert("display name is not updated")
         console.log("userService.updateUserAboutInfo || error : ", error);
       })
+      toast.promise(
+        imagePromise,
+        {
+          loading: 'updating display name...',
+          success: <b>display name is updated</b>,
+          error: <b>problem while updating display name</b>,
+        },
+        {
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 2000,
+          },
+        }
+      );
     }
     if (isImageDataUpdate) {
       pass = true;
@@ -64,16 +94,32 @@ export default function Profile() {
       const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)); // Convert to byte array
       // console.log("isImageDataUpdate || base64 : ", base64Data);
       console.log("isImageDataUpdate || buteArray : ", byteArray.length);
-
-      userService.updateUserProfileImage(byteArray).then((status) => {
-        alert("Profile image is updated")
+      const imagePromise = userService.updateUserProfileImage(byteArray);
+      imagePromise.then((status) => {
       }).catch((error) => {
-        alert("Profile image is not updated")
         console.log("userService.updateUserProfileImage || error : ", error);
       })
+      toast.promise(
+        imagePromise,
+        {
+          loading: 'updating image...',
+          success: <b>image is updated</b>,
+          error: <b>problem while updating image</b>,
+        },
+        {
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 2000,
+          },
+        }
+      );
     }
     if (!pass) {
-      alert("about and displayname and Profile image is already updated");
+      toast.success("about and displayname and Profile image is already updated", {
+        duration: 2000,
+      });
     }
   }
 
@@ -122,7 +168,7 @@ export default function Profile() {
         };
       };
       if (originalBlob.size > 10000000) {
-        alert("max 10MB is allowed");
+        toast.error("max 10MB is allowed");
         return;
       }
       reader.readAsDataURL(file);
@@ -219,7 +265,7 @@ export default function Profile() {
                 <span className="text-black-50">
                   Account number: {currentUser.number}
                 </span>
-               
+
               </div>
 
 

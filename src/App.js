@@ -53,6 +53,7 @@ function App() {
       setCurrentUser(localCurrentUser);
       navigate("/home");
     }
+
   }, []);
 
 
