@@ -11,7 +11,7 @@ import userService from "../../services/user.service";
 export default function ContactProfileView() {
 
   const { isSidebarOpen, setIsSidebarOpen, currentContact, setCurrentContact, admin, currentUser, setCurrentUser, mySocket, setMySocket, storedEmitEvents, setStoredEmitEvents, contactId, setContactId, massegeArray, setMassegeArray } = useContext(UserContext);
-
+    
   const [about, setAbout] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [number, setNumber] = useState("");
